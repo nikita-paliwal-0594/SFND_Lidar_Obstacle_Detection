@@ -234,6 +234,45 @@ std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::
 
 
 template<typename PointT>
+void ProcessPointClouds<PointT>::proximity(int index, const std::vector<std::vector<float>>& points, std::vector<int>& cluster, std::vector<bool>& processed, KdTree* tree, float distanceTol)
+{
+	processed[index] = true;
+	cluster.push_back(index);
+
+	std::vector<int> nearest = tree->search(points[index], distanceTol);
+
+	for (int id: nearest)
+	{
+		if (!processed[id])
+			proximity(id, points, cluster, processed, tree, distanceTol);
+	}
+}
+
+
+template<typename PointT>
+std::vector<std::vector<int>> ProcessPointClouds<PointT>::euclideanCluster(const std::vector<std::vector<float>>& points, KdTree* tree, float distanceTol)
+{
+
+	// TODO: Fill out this function to return list of indices for each cluster
+
+	std::vector<std::vector<int>> clusters;
+	std::vector<bool> processed(points.size(), false);
+
+	for (int i = 0; i < points.size(); i++)
+	{
+		if (processed[i])
+			continue;
+
+		std::vector<int> cluster;
+		proximity(i, points, cluster, processed, tree, distanceTol);
+		clusters.push_back(cluster);
+	}
+ 
+	return clusters;
+
+}
+
+template<typename PointT>
 std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::CustomClustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize)
 {
 
