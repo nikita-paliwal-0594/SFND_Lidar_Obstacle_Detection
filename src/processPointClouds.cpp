@@ -233,7 +233,6 @@ std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::
 }
 
 
-
 template<typename PointT>
 std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::CustomClustering(typename pcl::PointCloud<PointT>::Ptr cloud, float clusterTolerance, int minSize, int maxSize)
 {
@@ -256,10 +255,10 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
 
     std::vector<std::vector<int>> clusterIndices = euclideanCluster(points, kdtree, clusterTolerance);
 
-    for (pcl::PointIndices getIndices: clusterIndices)
+    for (std::vector<int> indices: clusterIndices)
     {
         typename pcl::PointCloud<PointT>::Ptr cloudCluster (new pcl::PointCloud<PointT>);
-        for (int index: getIndices.indices)
+        for (int index: indices)
             cloudCluster->points.push_back (cloud->points[index]); 
 
         cloudCluster->width = cloudCluster->points.size();
@@ -332,8 +331,8 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
 			inliersResult = inliers;
     }
     
-    typename pcl::PointCloud<PointT>::Ptr cloudInliers = new pcl::PointCloud<PointT>();
-    typename pcl::PointCloud<PointT>::Ptr cloudOutliers = new pcl::PointCloud<PointT>();
+    typename pcl::PointCloud<PointT>::Ptr cloudInliers (new pcl::PointCloud<PointT>());
+    typename pcl::PointCloud<PointT>::Ptr cloudOutliers (new pcl::PointCloud<PointT>());
 
     for (int i = 0; i < cloud->points.size(); i++)
     {
@@ -345,6 +344,6 @@ std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT
         
     }
     
-	return std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> (cloudInliers, cloudOutliers);
+	return std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> (cloudOutliers, cloudInliers);
     
 }
