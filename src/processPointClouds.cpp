@@ -53,7 +53,7 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     roof.setInputCloud (cloudRegion);
     roof.filter (indices);
 
-    pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+    pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
     for (int point: inliers)
         inliers->indices.push_back(point);
 
